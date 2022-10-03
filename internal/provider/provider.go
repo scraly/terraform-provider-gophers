@@ -27,11 +27,11 @@ func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
 			DataSourcesMap: map[string]*schema.Resource{
-				"gophers": dataSourceGophers(),
-				// "gopher": dataSourceGopher(),
+				"gophers":        dataSourceGophers(),
+				"gophers_gopher": dataSourceGopher(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				// "gopher": resourceGopher(),
+				// "gophers_gopher": resourceGopher(),
 			},
 		}
 

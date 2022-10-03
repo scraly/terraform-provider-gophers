@@ -7,7 +7,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccResourceScaffolding(t *testing.T) {
+func TestAccResourceGopher(t *testing.T) {
+	//TODO:
 	t.Skip("resource not yet implemented, remove this once you add your own code")
 
 	resource.UnitTest(t, resource.TestCase{
@@ -18,7 +19,7 @@ func TestAccResourceScaffolding(t *testing.T) {
 				Config: testAccResourceScaffolding,
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestMatchResourceAttr(
-						"scaffolding_resource.foo", "sample_attribute", regexp.MustCompile("^ba")),
+						"gopher.my_gopher", "name", regexp.MustCompile("^to")),
 				),
 			},
 		},
@@ -26,7 +27,9 @@ func TestAccResourceScaffolding(t *testing.T) {
 }
 
 const testAccResourceScaffolding = `
-resource "scaffolding_resource" "foo" {
-  sample_attribute = "bar"
+resource "gopher" "my_gopher" {
+  name = "toto"
+  path = "tutu"
+  url = "titi"
 }
 `

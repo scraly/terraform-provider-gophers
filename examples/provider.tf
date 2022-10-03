@@ -1,7 +1,3 @@
-# provider "gophers" {
-#   # example configuration here
-# }
-
 terraform {
   required_providers {
     gophers = {
