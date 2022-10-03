@@ -1,4 +1,4 @@
-module github.com/hashicorp/terraform-provider-scaffolding
+module github.com/scraly/terraform-provider-gophers
 
 go 1.18
 
