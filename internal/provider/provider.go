@@ -31,7 +31,7 @@ func New(version string) func() *schema.Provider {
 				"gophers_gopher": dataSourceGopher(),
 			},
 			ResourcesMap: map[string]*schema.Resource{
-				// "gophers_gopher": resourceGopher(),
+				"gophers_gopher": resourceGopher(),
 			},
 		}
 
