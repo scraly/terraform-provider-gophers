@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -108,50 +109,169 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 		d.SetId(gopherName)
 
 	} else {
-		return diag.FromErr(err)
+		return diag.Errorf(" Gopher does not exist")
 	}
 
 	return diags
 }
 
-//TODO:
 func resourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
-	// use the meta value to retrieve your client from the provider configure method
-	// client := meta.(*apiClient)
 
 	// Warning or errors can be collected in a slice type
-	// var diags diag.Diagnostics
+	var diags diag.Diagnostics
 
-	// gopherName := d.Id()
-	//TODO: get gopher by name
+	//Get the field "name"
+	gopherName := d.Get("name").(string)
 
-	//TODO: comme le datasource
-	//TODO: recuperer la reponse et setter le d.Set... (name, path, url)
+	log.Printf("[DEBUG] Will read gopher with the name: %s", gopherName)
 
-	// return diags
+	endpoint := fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName)
+	log.Println("[DEBUG] Endpoint:", endpoint)
 
-	return diag.Errorf("not implemented")
+	//This function creates a new GET request to localhost:8080/gopher. Then, it decodes the response into a []map[string]interface{}.
+	//curl http://localhost:8080/gophers\?name\=yoda-gopher
+	resp, err := http.Get(endpoint)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer resp.Body.Close()
+
+	log.Println("[DEBUG] Status Code", resp.StatusCode)
+
+	if resp.StatusCode == http.StatusOK {
+		myGopher := make(map[string]interface{})
+		err = json.NewDecoder(resp.Body).Decode(&myGopher)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		//Add gopher's information in the TF State the response body
+		//assigning each value to its respective schema position.
+		for k, v := range myGopher {
+			if k != "id" {
+				d.Set(k, v)
+			} else {
+				d.SetId(fmt.Sprint(v))
+			}
+		}
+
+		// set the ID in the TF State
+		d.SetId(gopherName)
+	} else {
+		//When we have 404 HTTP Error Code, returns a warning message in the diagnostic
+		return diag.Errorf(" Gopher does not exist")
+	}
+
+	return diags
 }
 
-//TODO:
+//Update the path and the URL of a gopher
 func resourceGopherUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
-	// use the meta value to retrieve your client from the provider configure method
-	// client := meta.(*apiClient)
 
-	//TODO: PUT?
+	client := &http.Client{Timeout: 10 * time.Second}
 
-	return diag.Errorf("not implemented")
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	//Get the fields
+	gopherName := d.Get("name").(string)
+	gopherPath := d.Get("path").(string)
+	gopherURL := d.Get("url").(string)
+
+	//Create JSON object with our Gopher
+	aGopher := Gopher{
+		Name: gopherName,
+		Path: gopherPath,
+		URL:  gopherURL,
+	}
+
+	//Convert Gopher to byte using json.Marshal method
+	body, err := json.Marshal(aGopher)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	log.Printf("[DEBUG] Will update a Gopher: %+v", string(body))
+
+	endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	log.Println("[DEBUG] Endpoint:", endpoint)
+
+	//curl -X PUT http://localhost:8080/gopher
+	req, err := http.NewRequest(http.MethodPut, endpoint, bytes.NewReader(body))
+	req.Header.Set("Content-Type", "application/json")
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	r, err := client.Do(req)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer r.Body.Close()
+
+	log.Println("[DEBUG] Status Code", r.StatusCode)
+
+	if r.StatusCode == http.StatusCreated {
+		//Unmarshal the body response to the TF State
+		gopher := make(map[string]interface{})
+		err = json.NewDecoder(r.Body).Decode(&gopher)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		//Add gopher's information in the TF State the response body
+		//assigning each value to its respective schema position.
+		for k, v := range gopher {
+			if k != "id" {
+				d.Set(k, v)
+			} else {
+				d.SetId(fmt.Sprint(v))
+			}
+		}
+
+		// Store the Id of the Gopher in the TF State (equals to the gopherName)
+		d.SetId(gopherName)
+
+	} else {
+		return diag.Errorf(" Gopher does not exist")
+	}
+
+	return diags
 }
 
-//TODO:
 func resourceGopherDelete(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
-	// use the meta value to retrieve your client from the provider configure method
-	// client := meta.(*apiClient)
 
-	//TODO: Call DELETE API
-	//TODO: Set ID a empty (il enlevera du TF state)
+	client := &http.Client{Timeout: 10 * time.Second}
 
-	return diag.Errorf("not implemented")
+	// Warning or errors can be collected in a slice type
+	var diags diag.Diagnostics
+
+	//Get the field "name"
+	gopherName := d.Get("name").(string)
+
+	log.Printf("[DEBUG] Will delete gopher with the name: %s", gopherName)
+
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName), nil)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
+	r, err := client.Do(req)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer r.Body.Close()
+
+	if r.StatusCode == http.StatusOK {
+		//Set ID to empty (Terraform wil remove it from the TF State)
+		d.SetId("")
+	} else {
+		return diag.Errorf(" Gopher does not exist")
+	}
+
+	return diags
 }
 
 //TODO: import not implemented
+
+// return diag.Errorf("not implemented")
