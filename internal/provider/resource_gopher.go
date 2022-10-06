@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -49,10 +48,7 @@ type Gopher struct {
 	URL  string `json:"url"`
 }
 
-//TODO:
 func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
-
-	client := &http.Client{Timeout: 10 * time.Second}
 
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
@@ -63,43 +59,57 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 	gopherURL := d.Get("url").(string)
 
 	//Create JSON object with our Gopher
-	myGopher, err := json.Marshal(Gopher{Name: gopherName, Path: gopherPath, URL: gopherURL})
+	aGopher := Gopher{
+		Name: gopherName,
+		Path: gopherPath,
+		URL:  gopherURL,
+	}
+
+	//Convert Gopher to byte using json.Marshal method
+	body, err := json.Marshal(aGopher)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	log.Printf("[DEBUG] Will create a Gopher: %+v", string(myGopher))
+	log.Printf("[DEBUG] Will create a Gopher: %+v", string(body))
 
-	bodyReader := bytes.NewReader(myGopher)
+	endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	log.Println("[DEBUG] Endpoint:", endpoint)
 
-	//This function creates a new GET request to localhost:8080/gopher. Then, it decodes the response into a []map[string]interface{}.
+	//This function creates a new POST request to localhost:8080/gopher.
 	//curl http://localhost:8080/gopher
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/gopher", "http://localhost:8080"), bodyReader)
+	resp, err := http.Post(endpoint, "application/json", bytes.NewBuffer(body))
 	if err != nil {
 		return diag.FromErr(err)
 	}
+	defer resp.Body.Close()
 
-	r, err := client.Do(req)
-	if err != nil {
+	log.Println("[DEBUG] Status Code", resp.StatusCode)
+
+	if resp.StatusCode == http.StatusCreated {
+		//Unmarshal the body response to the TF State
+		gopher := make(map[string]interface{})
+		err = json.NewDecoder(resp.Body).Decode(&gopher)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		//Add gopher's information in the TF State the response body
+		//assigning each value to its respective schema position.
+		for k, v := range gopher {
+			if k != "id" {
+				d.Set(k, v)
+			} else {
+				d.SetId(fmt.Sprint(v))
+			}
+		}
+
+		// Store the Id of the Gopher in the TF State (equals to the gopherName)
+		d.SetId(gopherName)
+
+	} else {
 		return diag.FromErr(err)
 	}
-	defer r.Body.Close()
-
-	//TODO:
-	//gopher := make(map[string]interface{})
-	gopher := make(map[string]interface{})
-	err = json.NewDecoder(r.Body).Decode(&gopher)
-	if err != nil {
-		return diag.FromErr(err)
-	}
-
-	//The d.Set("gophers", gophers) function sets the response body (created gopher object) to Terraform gophers_gopher data source, assigning each value to its respective schema position.
-	if err := d.Set("gopher", gopher); err != nil {
-		return diag.FromErr(err)
-	}
-
-	//Store the Id of the Gopher in the TF State (equals to the gopherName)
-	d.SetId(gopherName)
 
 	return diags
 }

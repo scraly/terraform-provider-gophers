@@ -103,7 +103,7 @@ func dataSourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any)
 		}
 	}
 
-	// always run
+	// set the ID in the TF State
 	d.SetId(gopherName)
 
 	//Notice that this function returns a diag.Diagnostics type, which can return multiple errors and warnings to Terraform, giving users more robust error and warning messages.
