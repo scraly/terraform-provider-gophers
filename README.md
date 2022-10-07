@@ -30,7 +30,7 @@ mv terraform-provider-gophers ~/.terraform.d/plugins/terraform.local/local/gophe
 
 1. Define the provider you want to use
 
-`examples/provider/provider.tf`:
+The provider is defined in `examples/provider.tf` file:
 
 ```
 terraform {
@@ -43,29 +43,50 @@ terraform {
 }
 ```
 
-1. Init Terraform
+2. Define the datasources
 
-```
-$ rm .terraform.lock.hcl && terraform init
-```
+We defined several datasources in `examples/data.f` file:
 
-1. Define datasources
+```yaml
+# List of available gophers
+data "gophers" "my_gophers" {
+}
 
-`examples/data.tf`
+output "return_gophers" {
+  value = length(data.gophers.my_gophers.gophers) >= 1
+}
 
-```
-$ terraform apply
-```
-
-1. Define resource
-
-`examples/resource.tf`
-
-```
-$ terraform apply
+# Display information about a Gopher
+data "gophers_gopher" "moultipass" {
+  name = "5th-element"
+}
 ```
 
-1. destroy datasource and resources you created 
+3. Define resources
+
+We defined a resource in `examples/resource.f` file:
+
+```yaml
+resource "gophers_gopher" "x-files" {
+  name = "x-files"
+  path = "x-files.png"
+  url  = "https://raw.githubusercontent.com/scraly/gophers/main/x-files.png"
+}
+```
+
+4. Init Terraform
+
+```
+rm .terraform.lock.hcl && terraform init
+```
+
+5. Apply the configuration you defined
+
+```
+terraform apply
+```
+
+6. destroy datasource and resources you created 
 
 ```
 terraform destroy
