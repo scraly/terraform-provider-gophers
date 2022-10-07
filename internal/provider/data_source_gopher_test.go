@@ -7,7 +7,7 @@ import (
 )
 
 func TestAccDataSourceGopher(t *testing.T) {
-	resourceName := "data.gophers_gopher.yoda"
+	resourceName := "data.gophers_gopher.moultipass"
 
 	resource.UnitTest(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -17,7 +17,7 @@ func TestAccDataSourceGopher(t *testing.T) {
 				Config: testAccDataSourceGopher,
 				Check: resource.ComposeTestCheckFunc(
 
-					resource.TestCheckResourceAttrSet(resourceName, "gophers.#"),
+					resource.TestCheckResourceAttrSet(resourceName, "name"),
 				),
 			},
 		},
@@ -25,7 +25,7 @@ func TestAccDataSourceGopher(t *testing.T) {
 }
 
 const testAccDataSourceGopher = `
-data "gophers_gopher" "yoda" {
-    name = "yoda-gopher"
-}
+data "gophers_gopher" "moultipass" {
+	name = "5th-element"
+  }
 `

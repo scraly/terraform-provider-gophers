@@ -13,10 +13,6 @@ import (
 // ensure the documentation is formatted properly.
 //go:generate terraform fmt -recursive ./examples/
 
-// Run the docs generation tool, check its repository for more information on how it works and how docs
-// can be customized.
-//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
-
 var (
 	// these will be set by the goreleaser configuration
 	// to appropriate values for the compiled binary
@@ -37,7 +33,8 @@ func main() {
 
 		// TODO: update this string with the full name of your provider as used in your configs
 		// ProviderAddr: "registry.terraform.io/hashicorp/scaffolding",
-		ProviderAddr: "registry.terraform.io/scraly/gophers",
+		// ProviderAddr: "registry.terraform.io/scraly/gophers",
+		// ProviderAddr: "terraform.local/local/gophers",
 
 		ProviderFunc: provider.New(version),
 	}

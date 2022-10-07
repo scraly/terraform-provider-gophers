@@ -109,7 +109,7 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 		d.SetId(gopherName)
 
 	} else {
-		return diag.Errorf(" Gopher does not exist")
+		return diag.Errorf("A Gopher with this name already exits")
 	}
 
 	return diags

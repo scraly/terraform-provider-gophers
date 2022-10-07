@@ -11,6 +11,6 @@ The document generation tool looks for files in the following locations by defau
 ## Run
 
 ```
-$ terraform init
+$ rm .terraform.lock.hcl && terraform init
 $ terraform apply
 ```

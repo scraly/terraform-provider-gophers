@@ -30,7 +30,7 @@ mv terraform-provider-gophers ~/.terraform.d/plugins/terraform.local/local/gophe
 
 1. Define the provider you want to use
 
-`examples/provider.tf`:
+`examples/provider/provider.tf`:
 
 ```
 terraform {
@@ -85,4 +85,20 @@ In order to run the full suite of Acceptance tests, run `make testacc`.
 
 ```sh
 $ make testacc
+```
+
+# Documentation
+
+When the plugin will be relkeased, add the following content in the `main.tf` file:
+
+```go
+// Run the docs generation tool, check its repository for more information on how it works and how docs
+// can be customized.
+//go:generate go run github.com/hashicorp/terraform-plugin-docs/cmd/tfplugindocs
+```
+
+And execute the `go generate` command to generate the documentation:
+
+```bash
+go generate
 ```

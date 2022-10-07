@@ -1,8 +1,10 @@
 TEST?=$$(go list ./... | grep -v 'vendor')
 # HOSTNAME=scraly.com
 HOSTNAME=terraform.local
+# HOSTNAME=registry.terraform.io
 # NAMESPACE=com
 NAMESPACE=local
+# NAMESPACE=hashicorp
 NAME=gophers
 BINARY=terraform-provider-${NAME}
 VERSION=0.0.1
