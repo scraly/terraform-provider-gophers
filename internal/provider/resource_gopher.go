@@ -54,6 +54,9 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
+
 	//Get the field "name"
 	gopherName := d.Get("name").(string)
 	gopherPath := d.Get("path").(string)
@@ -74,7 +77,8 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	log.Printf("[DEBUG] Will create a Gopher: %+v", string(body))
 
-	endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	// endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	endpoint := fmt.Sprintf("%s/gopher", myClient.Endpoint)
 	log.Println("[DEBUG] Endpoint:", endpoint)
 
 	//This function creates a new POST request to localhost:8080/gopher.
@@ -120,12 +124,16 @@ func resourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any) d
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
+
 	//Get the field "name"
 	gopherName := d.Get("name").(string)
 
 	log.Printf("[DEBUG] Will read gopher with the name: %s", gopherName)
 
-	endpoint := fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName)
+	// endpoint := fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName)
+	endpoint := fmt.Sprintf("%s/gopher?name=%s", myClient.Endpoint, gopherName)
 	log.Println("[DEBUG] Endpoint:", endpoint)
 
 	//This function creates a new GET request to localhost:8080/gopher. Then, it decodes the response into a []map[string]interface{}.
@@ -173,6 +181,9 @@ func resourceGopherUpdate(ctx context.Context, d *schema.ResourceData, meta any)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
+
 	//Get the fields
 	gopherName := d.Get("name").(string)
 	gopherPath := d.Get("path").(string)
@@ -193,7 +204,8 @@ func resourceGopherUpdate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	log.Printf("[DEBUG] Will update a Gopher: %+v", string(body))
 
-	endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	// endpoint := fmt.Sprintf("%s/gopher", "http://localhost:8080")
+	endpoint := fmt.Sprintf("%s/gopher", myClient.Endpoint)
 	log.Println("[DEBUG] Endpoint:", endpoint)
 
 	//curl -X PUT http://localhost:8080/gopher
@@ -246,12 +258,17 @@ func resourceGopherDelete(ctx context.Context, d *schema.ResourceData, meta any)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
+
 	//Get the field "name"
 	gopherName := d.Get("name").(string)
 
 	log.Printf("[DEBUG] Will delete gopher with the name: %s", gopherName)
 
-	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName), nil)
+	// req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName), nil)
+	req, err := http.NewRequest(http.MethodDelete, fmt.Sprintf("%s/gopher?name=%s", myClient.Endpoint, gopherName), nil)
+
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -273,5 +290,4 @@ func resourceGopherDelete(ctx context.Context, d *schema.ResourceData, meta any)
 }
 
 //TODO: import not implemented
-
 // return diag.Errorf("not implemented")

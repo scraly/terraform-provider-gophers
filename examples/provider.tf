@@ -6,3 +6,9 @@ terraform {
     }
   }
 }
+
+provider "gophers" {
+  # Configuration options
+  # endpoint = "http://localhost:8080"
+  endpoint = "https://8080-scraly-gophersapi-pdiocn3y9uh.ws-eu73.gitpod.io"
+}

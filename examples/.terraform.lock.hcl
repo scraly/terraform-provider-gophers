@@ -5,6 +5,6 @@ provider "terraform.local/local/gophers" {
   version     = "0.0.1"
   constraints = "0.0.1"
   hashes = [
-    "h1:e/cOWKQK1lSiVdTdbaKJ1ktmy14+Ym3qmjSz+4Cb1E4=",
+    "h1:uKZW65/Qsy5bDpPJuYjMzCnM0Ok2s2qQ+Sl5sKCZYw0=",
   ]
 }

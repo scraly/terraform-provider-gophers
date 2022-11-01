@@ -46,6 +46,9 @@ func dataSourceGophers() *schema.Resource {
 
 func dataSourceGophersRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
+
 	client := &http.Client{Timeout: 10 * time.Second}
 
 	// The /gophers endpoint returns an array of gophers.
@@ -54,7 +57,8 @@ func dataSourceGophersRead(ctx context.Context, d *schema.ResourceData, meta any
 	var diags diag.Diagnostics
 
 	//This function creates a new GET request to localhost:8080/gophers. Then, it decodes the response into a []map[string]interface{}.
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/gophers", "http://localhost:8080"), nil)
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/gophers", "http://localhost:8080"), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/gophers", myClient.Endpoint), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}

@@ -26,6 +26,13 @@ func init() {
 func New(version string) func() *schema.Provider {
 	return func() *schema.Provider {
 		p := &schema.Provider{
+			Schema: map[string]*schema.Schema{
+				"endpoint": &schema.Schema{
+					Type:        schema.TypeString,
+					Optional:    true,
+					DefaultFunc: schema.EnvDefaultFunc("GOPHERS_ENDPOINT", nil),
+				},
+			},
 			DataSourcesMap: map[string]*schema.Resource{
 				"gophers":        dataSourceGophers(),
 				"gophers_gopher": dataSourceGopher(),
@@ -45,14 +52,26 @@ type apiClient struct {
 	// Add whatever fields, client or connection info, etc. here
 	// you would need to setup to communicate with the upstream
 	// API.
+	Endpoint string
 }
 
-func configure(version string, p *schema.Provider) func(context.Context, *schema.ResourceData) (any, diag.Diagnostics) {
-	return func(context.Context, *schema.ResourceData) (any, diag.Diagnostics) {
+func configure(version string, p *schema.Provider) func(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
+	return func(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 		// Setup a User-Agent for your API client (replace the provider name for yours):
 		// userAgent := p.UserAgent("terraform-provider-scaffolding", version)
 		// TODO: myClient.UserAgent = userAgent
 
-		return &apiClient{}, nil
+		endpoint := d.Get("endpoint").(string)
+
+		var myApiClient *apiClient
+
+		if endpoint != "" {
+			myApiClient = &apiClient{Endpoint: endpoint}
+		} else {
+			myApiClient = &apiClient{Endpoint: "http://localhost:8080"}
+		}
+
+		// return &apiClient{Endpoint: endpoint}, nil
+		return myApiClient, nil
 	}
 }

@@ -34,31 +34,14 @@ func dataSourceGopher() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			// "gophers": &schema.Schema{
-			// 	Type:     schema.TypeList,
-			// 	Computed: true,
-			// 	Elem: &schema.Resource{
-			// 		Schema: map[string]*schema.Schema{
-			// 			"name": &schema.Schema{
-			// 				Type:     schema.TypeString,
-			// 				Computed: true,
-			// 			},
-			// 			"path": &schema.Schema{
-			// 				Type:     schema.TypeString,
-			// 				Computed: true,
-			// 			},
-			// 			"url": &schema.Schema{
-			// 				Type:     schema.TypeString,
-			// 				Computed: true,
-			// 			},
-			// 		},
-			// 	},
-			// },
 		},
 	}
 }
 
 func dataSourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
+
+	// Retrieve endpoint information
+	myClient := meta.(*apiClient)
 
 	// The /gopher?name=%s endpoint returns a gopher object.
 
@@ -74,7 +57,8 @@ func dataSourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any)
 
 	//This function creates a new GET request to localhost:8080/gopher. Then, it decodes the response into a []map[string]interface{}.
 	//curl http://localhost:8080/gophers\?name\=yoda-gopher
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName), nil)
+	// req, err := http.NewRequest("GET", fmt.Sprintf("%s/gopher?name=%s", "http://localhost:8080", gopherName), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/gopher?name=%s", myClient.Endpoint, gopherName), nil)
 	if err != nil {
 		return diag.FromErr(err)
 	}
