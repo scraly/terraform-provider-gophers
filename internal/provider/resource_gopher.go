@@ -29,8 +29,8 @@ func resourceGopher() *schema.Resource {
 				Type:        schema.TypeString,
 				Required:    true,
 			},
-			"path": {
-				Description: "Path of a Gopher.",
+			"displayname": {
+				Description: "Display name of a Gopher.",
 				Type:        schema.TypeString,
 				Required:    true,
 			},
@@ -44,9 +44,9 @@ func resourceGopher() *schema.Resource {
 }
 
 type Gopher struct {
-	Name string `json:"name"`
-	Path string `json:"path"`
-	URL  string `json:"url"`
+	Name        string `json:"name"`
+	DisplayName string `json:"displayname"`
+	URL         string `json:"url"`
 }
 
 func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
@@ -59,14 +59,14 @@ func resourceGopherCreate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	//Get the field "name"
 	gopherName := d.Get("name").(string)
-	gopherPath := d.Get("path").(string)
+	gopherDisplayName := d.Get("displayname").(string)
 	gopherURL := d.Get("url").(string)
 
 	//Create JSON object with our Gopher
 	aGopher := Gopher{
-		Name: gopherName,
-		Path: gopherPath,
-		URL:  gopherURL,
+		Name:        gopherName,
+		DisplayName: gopherDisplayName,
+		URL:         gopherURL,
 	}
 
 	//Convert Gopher to byte using json.Marshal method
@@ -173,7 +173,7 @@ func resourceGopherRead(ctx context.Context, d *schema.ResourceData, meta any) d
 	return diags
 }
 
-//Update the path and the URL of a gopher
+//Update the display name and the URL of a gopher
 func resourceGopherUpdate(ctx context.Context, d *schema.ResourceData, meta any) diag.Diagnostics {
 
 	client := &http.Client{Timeout: 10 * time.Second}
@@ -186,14 +186,14 @@ func resourceGopherUpdate(ctx context.Context, d *schema.ResourceData, meta any)
 
 	//Get the fields
 	gopherName := d.Get("name").(string)
-	gopherPath := d.Get("path").(string)
+	gopherDisplayName := d.Get("displayname").(string)
 	gopherURL := d.Get("url").(string)
 
 	//Create JSON object with our Gopher
 	aGopher := Gopher{
-		Name: gopherName,
-		Path: gopherPath,
-		URL:  gopherURL,
+		Name:        gopherName,
+		DisplayName: gopherDisplayName,
+		URL:         gopherURL,
 	}
 
 	//Convert Gopher to byte using json.Marshal method

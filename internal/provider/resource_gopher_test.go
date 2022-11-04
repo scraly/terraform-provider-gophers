@@ -12,12 +12,12 @@ func TestAccResourceGopher(t *testing.T) {
 	resourceName := "gophers_gopher.gandalf"
 
 	name := "gandalf"
-	path := "gandalf.png"
+	displayname := "Gandalf"
 	url := "https://raw.githubusercontent.com/scraly/gophers/main/gandalf-colored.png"
 	config := fmt.Sprintf(
 		testAccResourceGopher,
 		name,
-		path,
+		displayname,
 		url,
 	)
 
@@ -30,7 +30,7 @@ func TestAccResourceGopher(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(resourceName, "id"),
 					resource.TestCheckResourceAttr(resourceName, "name", name),
-					resource.TestCheckResourceAttr(resourceName, "path", path),
+					resource.TestCheckResourceAttr(resourceName, "displayname", displayname),
 					resource.TestCheckResourceAttr(resourceName, "url", url),
 				),
 			},
@@ -41,7 +41,7 @@ func TestAccResourceGopher(t *testing.T) {
 const testAccResourceGopher = `
 resource "gophers_gopher" "gandalf" {
 	name = "%s"
-	path = "%s"
+	displayname = "%s"
 	url  = "%s"
 }
 `

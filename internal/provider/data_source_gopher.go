@@ -18,7 +18,7 @@ func dataSourceGopher() *schema.Resource {
 
 		ReadContext: dataSourceGopherRead,
 
-		//{"name":"5th-element","path":"5th-element.png","url":"https://raw.githubusercontent.com/scraly/gophers/main/5th-element.png"}
+		//{"name":"5th-element","displayname":"5th Element.png","url":"https://raw.githubusercontent.com/scraly/gophers/main/5th-element.png"}
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
 				Type:     schema.TypeString,
@@ -26,7 +26,7 @@ func dataSourceGopher() *schema.Resource {
 			},
 
 			//Computed
-			"path": &schema.Schema{
+			"displayname": &schema.Schema{
 				Type:     schema.TypeString,
 				Computed: true,
 			},

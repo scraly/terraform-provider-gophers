@@ -1,12 +1,10 @@
-# Terraform Provider Scaffolding (Terraform Plugin SDK)
-
-
+# Terraform Provider Gophers (Base on Terraform Plugin SDK)
 
 ## Requirements
 
 -	[Terraform](https://www.terraform.io/downloads.html) >= 0.13.x
 -	[Go](https://golang.org/doc/install) >= 1.18
--   [gophers API](https://github.com/scraly/gophers-api) running locally
+- [gophers API](https://github.com/scraly/gophers-api) running locally or through GitPod
 
 ## Building The Provider
 
@@ -69,7 +67,7 @@ We defined a resource in `examples/resource.f` file:
 ```yaml
 resource "gophers_gopher" "x-files" {
   name = "x-files"
-  path = "x-files.png"
+  displayname = "X Files"
   url  = "https://raw.githubusercontent.com/scraly/gophers/main/x-files.png"
 }
 ```
